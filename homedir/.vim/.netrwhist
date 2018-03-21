@@ -1,0 +1,8 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =6
+let g:netrw_dirhist_1='/'
+let g:netrw_dirhist_2='/src/code'
+let g:netrw_dirhist_3='/src/code/echo'
+let g:netrw_dirhist_4='/src/code/echo/applications'
+let g:netrw_dirhist_5='/src/code/echo/applications/der'
+let g:netrw_dirhist_6='/home/vagrant'
