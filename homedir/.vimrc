@@ -72,10 +72,8 @@ iabbrev pri private ;<LEFT>
 iabbrev pro protected ;<LEFT>
 iabbrev var_ var_dump();<LEFT><LEFT>
 iabbrev if( if () {}<LEFT><LEFT><LEFT><LEFT>
-iabbrev <? <?php<cr>
-iabbrev FireE FireEngine\ <ESC>xA
+iabbrev <?php <?php<cr>
 iabbrev ret return
-iabbrev WebTestCase Symfony\Bundle\FrameworkBundle\Test\WebTestCase
 iabbrev get_class_methods var_dump(get_class_methods());<Left><Left><Left>
 
 "Omy completion setting.
