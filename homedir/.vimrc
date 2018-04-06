@@ -9,6 +9,7 @@ set splitbelow
 set nobackup nowritebackup noswapfile
 syntax on
 set hlsearch
+hi Search cterm=NONE ctermfg=grey ctermbg=blue
 filetype indent on
 filetype plugin indent on
 set completeopt-=preview "Shuts the preview window in omny autocomplete off
@@ -39,14 +40,16 @@ noremap <S-T> gt
 noremap <C-t> <leader>Texplore <cr>
 noremap <leader>c :Findclass <C-R><C-W><cr>
 noremap <leader>C :Openclass <C-R><C-W><cr>
-noremap <leader>u :FindUsage <C-R><C-W><cr>
-noremap <leader>y :FindUsageFiles <C-R><C-W><cr>
-noremap <leader>U :OpenUsageFiles <C-R><C-W><cr>
+noremap <leader>u :Findusage <C-R><C-W><cr>
+noremap <leader>y :Findusagefiles <C-R><C-W><cr>
+noremap <leader>U :Openusagefiles <C-R><C-W><cr>
 noremap <leader>8 :global/\c<C-R><C-W>/print<cr>
+noremap <leader>ll :w<cr>:Lint<cr>
 
 " Change selection to uppercase
 vnoremap <leader>u U 
-vnoremap <leader>c y
+vnoremap <leader>c :normal 0i//<cr>
+vnoremap <leader>C :normal 0xx<cr>
 
 inoremap <leader>w <ESC><leader>w<cr>
 inoremap <leader>a <ESC><leader>w<cr>A
@@ -72,9 +75,8 @@ iabbrev pri private ;<LEFT>
 iabbrev pro protected ;<LEFT>
 iabbrev var_ var_dump();<LEFT><LEFT>
 iabbrev if( if () {}<LEFT><LEFT><LEFT><LEFT>
-iabbrev <?php <?php<cr>
 iabbrev ret return
-iabbrev get_class_methods var_dump(get_class_methods());<Left><Left><Left>
+iabbrev get_class_methods var_dump(get_class_methods());<LEFT><LEFT><LEFT>
 
 "Omy completion setting.
 if has("autocmd") && exists("+omnifunc")
@@ -121,8 +123,8 @@ function s:OpenClassCommand(className)
 endfunctio
 
 
-command! -complete=shellcmd -nargs=+ FindUsage call s:FindUsageCommand(<q-args>)
-function! s:FindUsageCommand(entity)
+command! -complete=shellcmd -nargs=+ Findusage call s:FindusageCommand(<q-args>)
+function! s:FindusageCommand(entity)
     below new
     execute 'silent $read ! findusage '. a:entity . ' ' . expand("%:p:h")
     execute 'redraw'
@@ -131,8 +133,8 @@ function! s:FindUsageCommand(entity)
     1
 endfunction
 
-command! -complete=shellcmd -nargs=+ FindUsageFiles call s:FindUsageFilesCommand(<q-args>)
-function! s:FindUsageFilesCommand(entity)
+command! -complete=shellcmd -nargs=+ Findusagefiles call s:FindusagefilesCommand(<q-args>)
+function! s:FindusagefilesCommand(entity)
     below new
     execute 'silent $read ! findusage '. a:entity . ' ' . expand("%:p:h") ' --short' 
     execute 'redraw'
@@ -141,8 +143,8 @@ function! s:FindUsageFilesCommand(entity)
     1
 endfunction
 
-command! -complete=shellcmd -nargs=+ OpenUsageFiles call s:OpenUsageFilesCommand(<q-args>)
-function! s:OpenUsageFilesCommand(entity)
+command! -complete=shellcmd -nargs=+ Openusagefiles call s:OpenusagefilesCommand(<q-args>)
+function! s:OpenusagefilesCommand(entity)
     execute '! findusage '. a:entity . ' ' . expand("%:p:h") ' --open' 
     1
 endfunction
@@ -164,13 +166,28 @@ function! s:LoadCTags()
     1
 endfunction
 
+command! -complete=command -nargs=1 List call s:ListSnippets(<q-args>)
+fun! s:ListSnippets(needle)
+    if a:needle == 'pm'
+        execute 'g/public function/p'
+
+    elseif a:needle == 'prm'
+        execute 'g/\(private\|protected\) function/p'
+
+    elseif a:needle == 'sm'
+        execute 'g/\(private\|public\) static function/p'
+
+    elseif a:needle == 'v'
+        execute 'g/[$]\(a-z\|A-Z\|0-9\|_\)* /p'
+
+    else
+        echo "arguments available: pm (public methods)|prm (private methods)|sm (static methods)|v (variables)"
+
+    endif
+    1
+endfunc
+
+
 " Add PHP class autoload
 au FileType php nnoremap gf :call composer#open_file#open(expand('<cword>'))<CR>
-
-if has("python3")
-    py3file ~/.vim/plugin/findclass.py
-
-    noremap <leader>v :python3 findInPath()<cr>
-    noremap <leader>V :python3 openFoundInPath()<cr>
-endif
 

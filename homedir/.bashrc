@@ -99,9 +99,10 @@ alias ee="exit"
 alias ..="cd .."
 alias dk='clear && docker'
 alias dc='clear && docker-compose'
+alias dcd='clear && docker-compose -f docker-compose-dev.yml'
 alias cc='reset && clear' #Resets the terminal then clears the screen.
 
-alias gst='clear && git branch && echo "---" && git status -s'
+alias gst='reset && clear && git branch && echo "---" && git status -s'
 alias gck='git checkout'
 
 # Add an "alert" alias for long running commands.  Use like so:

@@ -5,15 +5,15 @@ By adding customized CLI configuration, VIM and Docker installation scripts, thi
 
 Dependencies:
 --------------
-1. You would need to have Python 2.* installed for the XDEBUG VIM Debugger to run.
+1. You would need to have Python 3.* installed for the XDEBUG VIM Debugger to run.
 2. You need to have XDEBUG installed for the Debugger to run.
-3. You need VIM to be compiled with ```+python``` and ```+signals``` (only if you want XDEBUG capacity).
+3. You need VIM to be compiled with ```+signals``` (only if you want XDEBUG capacity).
 
 Installation:
 --------------
 *CLI configuration and VIM:* 
 
-To have VIM configured and ready to work with XDEBUG, you need to compile VIM with ```+python``` (that's Python 2.*) and ```+signals``` support.  If you don't have that (or don't want to have it) that's OK, the only thing that won't work will be de XDEBUG Debugger functionality.
+To have VIM configured and ready to work with XDEBUG, you need to compile VIM with ```+signals``` support.  If you don't have that (or don't want to have it) that's OK, the only thing that won't work will be de XDEBUG Debugger functionality.
 
 1. Copy the contents of homedir into your home directory (~).
 2. Exit and log in again into your Shell session.
@@ -31,6 +31,14 @@ A VIM environment that can do most of the things a full fledged IDE can, with ke
 - Some other things.
 
 Look at home/.vimrc for details of what you can do.
+
+Dependency projects:
+--------------------
+- XDebug capabilities are taken from:
+
+    - https://github.com/vim-vdebug/vdebug
+
+    - https://github.com/xdebug/xdebug/tree/master/debugclient
 
 In the future:
 --------------------
