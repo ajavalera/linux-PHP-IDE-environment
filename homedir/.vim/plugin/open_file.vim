@@ -3,7 +3,8 @@ if exists('g:loaded_composer_open_file') && g:loaded_composer_open_file
 endif
 
 " Open file for specified name
-fun! composer#open_file#open(name)
+" fun! composer#open_file#open(name)
+fun! open_file#open(name)
     let fqn = s:resolve_fqn(a:name)
     let file = s:find_file(fqn)
     if filereadable(file)
