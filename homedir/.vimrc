@@ -27,9 +27,6 @@ noremap <C-p> <leader>bprevious <cr>
 noremap <S-p> <leader>bnext <cr>
 noremap <C-D> <leader>bdelete! <cr>
 noremap <C-d> <leader>bdelete <cr>
-noremap <C-e> <leader>Phplint <cr>
-noremap <C-k> 0i//<ESC><cr>0
-noremap <S-k> 0xx<cr>0
 noremap <C-a> ggVG
 noremap <C-b> Vyp
 noremap <C-l> :set hlsearch <cr>
@@ -45,6 +42,9 @@ noremap <leader>y :Findusagefiles <C-R><C-W><cr>
 noremap <leader>U :Openusagefiles <C-R><C-W><cr>
 noremap <leader>8 :global/\c<C-R><C-W>/print<cr>
 noremap <leader>ll :w<cr>:Lint<cr>
+noremap <leader>mm <C-w><C-w><C-w>15+
+noremap <leader>c 0i//<ESC><cr>0
+noremap <leader>C 0xx<cr>0
 
 " Change selection to uppercase
 vnoremap <leader>u U 
