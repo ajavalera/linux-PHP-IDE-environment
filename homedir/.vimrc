@@ -3,13 +3,13 @@ set exrc
 set tabstop=4 expandtab shiftwidth=4 smartindent
 set number
 set ruler
-colo evening 
+colo evening
 set tags=tags
 set splitbelow
 set nobackup nowritebackup noswapfile
 syntax on
 set hlsearch
-hi Search cterm=NONE ctermfg=grey ctermbg=blue
+hi Search cterm=NONE ctermfg=white ctermbg=blue
 filetype indent on
 filetype plugin indent on
 set completeopt-=preview "Shuts the preview window in omny autocomplete off
@@ -17,8 +17,8 @@ set completeopt-=preview "Shuts the preview window in omny autocomplete off
 " Variables and constants
 let g:VIMFILESDIR="~/.vim/"
 
-highlight Comment ctermfg=darkgray
-hi MatchParen cterm=bold ctermbg=darkgray ctermfg=6
+highlight Comment ctermfg=blue
+hi MatchParen cterm=bold ctermbg=black ctermfg=white
 
 " Maps 
 let mapleader= ":"
@@ -35,16 +35,19 @@ noremap <leader>v p
 noremap <S-t> gT
 noremap <S-T> gt
 noremap <C-t> <leader>Texplore <cr>
-noremap <leader>c :Findclass <C-R><C-W><cr>
-noremap <leader>C :Openclass <C-R><C-W><cr>
-noremap <leader>u :Findusage <C-R><C-W><cr>
-noremap <leader>y :Findusagefiles <C-R><C-W><cr>
-noremap <leader>U :Openusagefiles <C-R><C-W><cr>
-noremap <leader>8 :global/\c<C-R><C-W>/print<cr>
+noremap <leader>fc :Findclass <C-R><C-W><cr>
+noremap <leader>oc :Openclass <C-R><C-W><cr>
+noremap <leader>fu :Findusage <C-R><C-W><cr>
+noremap <leader>fuf :Findusagefiles <C-R><C-W><cr>
+noremap <leader>ff :Findfile <C-R><C-W><cr>
+noremap <leader>ouf :Openusagefiles <C-R><C-W><cr>
+noremap <leader>find :global/\c<C-R><C-W>/print<cr>
 noremap <leader>ll :w<cr>:Lint<cr>
 noremap <leader>mm <C-w><C-w><C-w>15+
 noremap <leader>c 0i//<ESC><cr>0
 noremap <leader>C 0xx<cr>0
+noremap <leader>func :g/function/p<cr>
+noremap <leader>goto /function <c-r><c-w><cr>
 
 " Change selection to uppercase
 vnoremap <leader>u U 
@@ -63,20 +66,23 @@ inoremap <leader>> <C-x><C-o>
 inoremap <leader>? <C-n>
 inoremap <leader># <ESC>0i#<ESC><leader>w<cr>A
 inoremap <leader>l <ESC><leader>w<cr><leader>Lint<cr>
+inoremap ' ''<left>
+inoremap " ""<left>
+inoremap { {}<left>
+inoremap ( ()<left>
+inoremap < <><left>
 
 "Abbreviations (acts like snippets)
 iabbrev /*** /**<cr>*<cr>*/<UP>
 iabbrev /@@ /** @var */<LEFT><LEFT><LEFT>
-iabbrev privatef private function(){}<LEFT><LEFT><LEFT><LEFT>
-iabbrev publicf public function(){}<LEFT><LEFT><LEFT><LEFT>
-iabbrev protectedf protected function(){}<LEFT><LEFT><LEFT><LEFT>
+iabbrev privatef private function(
+iabbrev publicf public function(
+iabbrev protectedf protected function(
 iabbrev pub public ;<LEFT>
 iabbrev pri private ;<LEFT>
 iabbrev pro protected ;<LEFT>
-iabbrev var_ var_dump();<LEFT><LEFT>
-iabbrev if( if () {}<LEFT><LEFT><LEFT><LEFT>
+iabbrev var_ var_dump(<LEFT>
 iabbrev ret return
-iabbrev get_class_methods var_dump(get_class_methods());<LEFT><LEFT><LEFT>
 
 "Omy completion setting.
 if has("autocmd") && exists("+omnifunc")
@@ -85,6 +91,16 @@ if has("autocmd") && exists("+omnifunc")
                 \   setlocal omnifunc=syntaxcomplete#Complete |
                 \ endif
 endif
+
+command! -complete=shellcmd -nargs=+ Findfile call s:FindFileCommand(<q-args>)
+function! s:FindFileCommand(file)
+    let fileName = a:file
+    botright new
+    setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
+    execute '$read ! find . -iname "*' . fileName . '*"'
+    setlocal nomodifiable
+    1
+endfunction
 
 " Shell commands in new window.
 command! -complete=shellcmd -nargs=+ Shell call s:RunShellCommand(<q-args>)
@@ -121,7 +137,6 @@ function s:OpenClassCommand(className)
     execute '! findclass '. a:className .' . --open'
     1
 endfunctio
-
 
 command! -complete=shellcmd -nargs=+ Findusage call s:FindusageCommand(<q-args>)
 function! s:FindusageCommand(entity)
@@ -187,6 +202,48 @@ fun! s:ListSnippets(needle)
     1
 endfunc
 
+command! -complete=command Refactor call s:Refactor()
+function! s:Refactor()
+    execute ':% s/( /(/g'
+    execute ':% s/){/) {/g'
+    execute ':% s/ )/)/g'
+    execute ':% s/ if(/ if (/g'
+    execute ':% s/ foreach(/ foreach (/g'
+    execute ':% s/ for(/ for (/g'
+    execute ':% s/\t/    /g'
+    execute ':% s/ var / public /g'
+    execute ':% s/=  /= /g'
+    execute ':% s/=   /= /g'
+    execute ':% s/=    /= /g'
+    execute ':% s/       )/        )/g'
+
+    1
+endfunction
+
+command! -complete=command -nargs=1 Alignequals call s:Alignequals(<q-args>)
+command! -complete=command -nargs=1 AE call s:Alignequals(<q-args>)
+function! s:Alignequals(column)
+    execute 'normal 0f='
+    execute 'normal '.a:column.'i '
+    execute 'normal 0'.a:column.'lvf=hx'
+endfunction
+
+command! -complete=command -nargs=1 Alignhere call s:Alignhere(<q-args>)
+command! -complete=command -nargs=1 AH call s:Alignhere(<q-args>)
+func! s:Alignhere(repeat)
+    let col=virtcol(".") - 1
+    let @z=':Alignequals '.col.'j'
+    execute 'normal '.a:repeat.'@z'
+endfunc
+
+command! -range -nargs=1 Alignselect <line1>,<line2>call s:Alignselect(<q-args>)
+command! -range -nargs=1 AS <line1>,<line2>call s:Alignselect(<q-args>)
+func! s:Alignselect(column)
+    let col=a:column
+    for lineno in range(a:firstline, a:lastline)
+        call s:Alignequals(col)
+    endfor
+endfunc
 
 " Add PHP class autoload
 au FileType php nnoremap gf :call composer#open_file#open(expand('<cword>'))<CR>

@@ -16,7 +16,7 @@ for opt in "$@"; do
             vim $(grep -Erol --exclude-dir=.git --exclude-dir=var  --exclude=tags -- "^(class|abstract class|interface) $1.*$" $2)
             exit
             ;;
-        "-r" | "--raw" )
+        "-r" | "--raw-results" )
             if [ -z ${3+x} ]; then
                 echo "Wrong parameter count: Use option -h for usage help."
                 exit
@@ -36,12 +36,11 @@ for opt in "$@"; do
             echo "    --help Print this help message"
             echo "  -o"
             echo "   --open  Open found classes in vim"
-            echo "  -r"
-            echo "  --raw Print output without styling or clasification"
             exit;
             ;;
     esac
 done
+
 
 if [ -z ${2+x} ]; then 
     echo "Use option -h for usage help."
