@@ -23,7 +23,7 @@ for opt in "$@"; do
             fi
 
 
-            vim $(find $path -iname "*$1*");
+            vim $(find $path -type f -iname "*$1*");
             exit
             ;;
         "-h" | "--help" )
@@ -42,5 +42,5 @@ for opt in "$@"; do
     esac
 done
 
-find $path -iname "*$1*"
+find $path -type f -iname "*$1*"
 

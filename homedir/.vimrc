@@ -39,20 +39,24 @@ noremap <leader>fc :Findclass <C-R><C-W><cr>
 noremap <leader>oc :Openclass <C-R><C-W><cr>
 noremap <leader>fu :Findusage <C-R><C-W><cr>
 noremap <leader>fuf :Findusagefiles <C-R><C-W><cr>
-noremap <leader>ff :Findfile <C-R><C-W><cr>
+noremap <leader>ff :Findfile <C-R><C-W> ./<cr>
 noremap <leader>ouf :Openusagefiles <C-R><C-W><cr>
 noremap <leader>find :global/\c<C-R><C-W>/print<cr>
 noremap <leader>ll :w<cr>:Lint<cr>
-noremap <leader>mm <C-w><C-w><C-w>15+
+noremap <leader>mm <C-w><C-w><C-w>200+
 noremap <leader>c 0i//<ESC><cr>0
 noremap <leader>C 0xx<cr>0
 noremap <leader>func :g/function/p<cr>
 noremap <leader>goto /function <c-r><c-w><cr>
 
+"Open php file path in current window and expand the window 250 units.
+noremap :oo 0v/.php<cr>3<right>y:e <c-r>0<cr><c-w>250+
+
 " Change selection to uppercase
 vnoremap <leader>u U 
 vnoremap <leader>c :normal 0i//<cr>
 vnoremap <leader>C :normal 0xx<cr>
+
 
 inoremap <leader>w <ESC><leader>w<cr>
 inoremap <leader>a <ESC><leader>w<cr>A
@@ -71,17 +75,18 @@ inoremap " ""<left>
 inoremap { {}<left>
 inoremap ( ()<left>
 inoremap < <><left>
+inoremap [ []<left>
 
 "Abbreviations (acts like snippets)
 iabbrev /*** /**<cr>*<cr>*/<UP>
-iabbrev /@@ /** @var */<LEFT><LEFT><LEFT>
-iabbrev privatef private function(
-iabbrev publicf public function(
-iabbrev protectedf protected function(
+iabbrev /@@ /** @var */3<LEFT>
+iabbrev privatef private function(<LEFT>
+iabbrev publicf public function(<LEFT>
+iabbrev protectedf protected function(<LEFT>
 iabbrev pub public ;<LEFT>
 iabbrev pri private ;<LEFT>
 iabbrev pro protected ;<LEFT>
-iabbrev var_ var_dump(<LEFT>
+iabbrev var_ var_dump(
 iabbrev ret return
 
 "Omy completion setting.
@@ -92,12 +97,19 @@ if has("autocmd") && exists("+omnifunc")
                 \ endif
 endif
 
-command! -complete=shellcmd -nargs=+ Findfile call s:FindFileCommand(<q-args>)
-function! s:FindFileCommand(file)
-    let fileName = a:file
+command! -complete=shellcmd -nargs=+ Findfile call s:FindFileCommand(<f-args>)
+function! s:FindFileCommand(...)
+    let fileName = a:1
+    let path = expand("%:p:h")
+    
+    if 2 == a:0
+        let path = a:2
+    endif
+
+
     botright new
     setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
-    execute '$read ! find . -iname "*' . fileName . '*"'
+    execute '$read ! find ' . path . ' -iname "' . fileName . '*"'
     setlocal nomodifiable
     1
 endfunction
@@ -109,7 +121,6 @@ function! s:RunShellCommand(cmdline)
     botright new
     setlocal buftype=nofile bufhidden=wipe nobuflisted noswapfile nowrap
     execute '$read !'. expanded_cmdline
-    setlocal nomodifiable
     1
 endfunction
 
